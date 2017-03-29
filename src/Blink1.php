@@ -8,6 +8,7 @@ use PHPUnit_Framework_TestSuite as TestSuite;
 use PHPUnit_Framework_AssertionFailedError as AssertionFailedError;
 use PHP_Timer as Timer;
 use \Exception;
+use \RuntimeException;
 use Symfony\Component\Process\Process;
 
 class Blink1 implements PHPUnitTestListenerInterface
@@ -109,7 +110,34 @@ class Blink1 implements PHPUnitTestListenerInterface
      */
     protected function blink(Process $process)
     {
+        try {
+            $this->guardBlinkToolPresence($this->guardProcessFactory());
+            $process->run();
+        } catch (RuntimeException $e) {
+            echo PHP_EOL . PHP_EOL . 'Warning from ' . __CLASS__ . ': ' . $e->getMessage();
+        }
         $process->run();
+    }
+
+    /**
+     * @param Symfony\Component\Process\Process $process The blink(1) guard process/command.
+     * @throws RuntimeException
+     */
+    protected function guardBlinkToolPresence(Process $process)
+    {
+        try {
+            $process->mustRun();
+        } catch (RuntimeException $e) {
+            throw new RuntimeException('Unable to locate blink1-tool.');
+        }
+    }
+
+    /**
+     * @return Symfony\Component\Process\Process
+     */
+    protected function guardProcessFactory()
+    {
+        return new Process('blink1-tool --version');
     }
 
     /**

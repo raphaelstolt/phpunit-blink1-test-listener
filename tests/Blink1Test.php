@@ -4,6 +4,9 @@ namespace Stolt\PHPUnit\TestListener\Tests;
 
 use Stolt\PHPUnit\TestListener\Blink1 as PHPUnitBlink1TestListener;
 use PHPUnit_Framework_TestCase as PHPUnit;
+use Symfony\Component\Process\Process;
+use phpmock\MockBuilder;
+use \RuntimeException;
 
 class Blink1Test extends PHPUnit
 {
@@ -101,6 +104,25 @@ class Blink1Test extends PHPUnit
                 'property' => 'riskies',
             ],
         ];
+    }
+
+    /**
+     * @test
+     * @ticket 1 (https://github.com/raphaelstolt/phpunit-blink1-test-listener/issues/1)
+     */
+    public function throwsExpectedExceptionWhenBlinkToolNotPresent()
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Unable to locate blink1-tool.');
+
+        $listener = new PHPUnitBlink1TestListener(10, false);
+        $class = new \ReflectionClass($listener);
+        $method = $class->getMethod('guardBlinkToolPresence');
+        $method->setAccessible(true);
+        $method->invokeArgs(
+            $listener,
+            [new Process('non-existent-command')]
+        );
     }
 
     /**
