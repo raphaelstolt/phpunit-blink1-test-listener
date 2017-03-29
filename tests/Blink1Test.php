@@ -127,6 +127,60 @@ class Blink1Test extends PHPUnit
 
     /**
      * @test
+     * @ticket 2 (https://github.com/raphaelstolt/phpunit-blink1-test-listener/issues/2)
+     */
+    public function throwsExpectedExceptionWhenBlinkToolLedDeviceNotPresent()
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Unable to find a blink1 LED device.');
+
+        $listener = new PHPUnitBlink1TestListener(10, false);
+
+        $class = new \ReflectionClass($listener);
+        $method = $class->getMethod('guardBlinkToolLedDevicePresence');
+        $method->setAccessible(true);
+        $method->invokeArgs(
+            $listener,
+            [new Process('non-existent-command')]
+        );
+    }
+
+    /**
+     * @test
+     * @dataProvider guardProcessProvider
+     */
+    public function factorsExpectedGuardProcess($type, $expectedCommandLine)
+    {
+        $class = new \ReflectionClass('Stolt\PHPUnit\TestListener\Blink1');
+        $method = $class->getMethod('guardProcessFactory');
+        $method->setAccessible(true);
+        $process = $method->invokeArgs(
+            new PHPUnitBlink1TestListener,
+            [$type]
+        );
+
+        $this->assertEquals($expectedCommandLine, $process->getCommandLine());
+    }
+
+    /**
+     * @return array
+     */
+    public function guardProcessProvider()
+    {
+        return [
+            'cli_guard_process' => [
+                'type' => null,
+                'expected_command_line' => 'blink1-tool --version',
+            ],
+            'led_device_guard' => [
+                'type' => PHPUnitBlink1TestListener::BLINK1_GUARD_LED_DEVICE,
+                'expected_command_line' => 'blink1-tool --list',
+            ],
+        ];
+    }
+
+    /**
+     * @test
      * @dataProvider failurePropertyProvider
      */
     public function failureTestStateIsDetected($property)

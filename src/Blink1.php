@@ -17,6 +17,8 @@ class Blink1 implements PHPUnitTestListenerInterface
     const SUCCESS_COLOR = '008000';
     const INCOMPLETE_COLOR = 'ffff00';
 
+    const BLINK1_GUARD_LED_DEVICE = 'led';
+
     private $errors = [];
     private $endedSuites = 0;
     private $failures = [];
@@ -112,11 +114,26 @@ class Blink1 implements PHPUnitTestListenerInterface
     {
         try {
             $this->guardBlinkToolPresence($this->guardProcessFactory());
+            $this->guardBlinkToolLedDevicePresence(
+                $this->guardProcessFactory(self::BLINK1_GUARD_LED_DEVICE)
+            );
             $process->run();
         } catch (RuntimeException $e) {
             echo PHP_EOL . PHP_EOL . 'Warning from ' . __CLASS__ . ': ' . $e->getMessage();
         }
-        $process->run();
+    }
+
+    /**
+     * @param Symfony\Component\Process\Process $process The blink(1) guard process/command.
+     * @throws RuntimeException
+     */
+    protected function guardBlinkToolLedDevicePresence(Process $process)
+    {
+        try {
+            $process->mustRun();
+        } catch (RuntimeException $e) {
+            throw new RuntimeException('Unable to find a blink1 LED device.');
+        }
     }
 
     /**
@@ -133,10 +150,14 @@ class Blink1 implements PHPUnitTestListenerInterface
     }
 
     /**
+     * @param  string $guard The type of the guard.
      * @return Symfony\Component\Process\Process
      */
-    protected function guardProcessFactory()
+    protected function guardProcessFactory($guard = null)
     {
+        if ($guard === self::BLINK1_GUARD_LED_DEVICE) {
+            return new Process('blink1-tool --list');
+        }
         return new Process('blink1-tool --version');
     }
 
