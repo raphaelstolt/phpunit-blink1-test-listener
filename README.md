@@ -1,5 +1,5 @@
 # PHPUnit blink(1) test listener
-[![Build Status](https://travis-ci.org/raphaelstolt/phpunit-blink1-test-listener.svg?branch=master)](https://travis-ci.org/stolt/phpunit-blink1-test-listener)
+[![Build Status](https://travis-ci.org/raphaelstolt/phpunit-blink1-test-listener.svg?branch=master)](https://travis-ci.org/raphaelstolt/phpunit-blink1-test-listener)
 
 This package provides an implementation of the [PHPUnit_Framework_TestListener](https://phpunit.de/manual/current/en/extending-phpunit.html#extending-phpunit.PHPUnit_Framework_TestListener) interface interacting with a [blink(1)](https://blink1.thingm.com/) USB notification LED light. It provides you a fast, visual feedback loop while TDDing with PHPUnit.
 
