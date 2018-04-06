@@ -2,16 +2,17 @@
 
 namespace Stolt\PHPUnit\TestListener;
 
-use PHPUnit_Framework_TestListener as PHPUnitTestListenerInterface;
-use PHPUnit_Framework_Test as Test;
-use PHPUnit_Framework_TestSuite as TestSuite;
-use PHPUnit_Framework_AssertionFailedError as AssertionFailedError;
-use PHP_Timer as Timer;
-use \Exception;
+use PHPUnit\Framework\AssertionFailedError;
+use PHPUnit\Framework\TestListener;
+use PHPUnit\Framework\Test;
+use PHPUnit\Framework\TestSuite;
+use PHPUnit\Framework\Warning;
+use SebastianBergmann\Timer\Timer;
+use \Throwable;
 use \RuntimeException;
 use Symfony\Component\Process\Process;
 
-class Blink1 implements PHPUnitTestListenerInterface
+class Blink1 implements TestListener
 {
     const FAILURE_COLOR = 'ff0000';
     const SUCCESS_COLOR = '008000';
@@ -20,6 +21,7 @@ class Blink1 implements PHPUnitTestListenerInterface
     const BLINK1_GUARD_LED_DEVICE = 'led';
 
     private $errors = [];
+    private $warnings = [];
     private $endedSuites = 0;
     private $failures = [];
     private $incompletes = [];
@@ -41,36 +43,41 @@ class Blink1 implements PHPUnitTestListenerInterface
         $this->turnOnFailure = $turnOnFailure;
     }
 
-    public function addError(Test $test, Exception $e, $time)
+    public function addError(Test $test, Throwable $e, float $time): void
     {
         $this->errors[] = $test->getName();
     }
 
-    public function addFailure(Test $test, AssertionFailedError $e, $time)
+    public function addFailure(Test $test, AssertionFailedError $e, float $time): void
     {
         $this->failures[] = $test->getName();
     }
 
-    public function addIncompleteTest(Test $test, Exception $e, $time)
+    public function addWarning(Test $test, Warning $e, float $time): void
+    {
+        $this->warnings[] = $test->getName();
+    }
+
+    public function addIncompleteTest(Test $test, Throwable $e, float $time): void
     {
         $this->incompletes[] = $test->getName();
     }
 
-    public function addSkippedTest(Test $test, Exception $e, $time)
+    public function addSkippedTest(Test $test, Throwable $e, float $time): void
     {
         $this->skips[] = $test->getName();
     }
 
-    public function addRiskyTest(Test $test, Exception $e, $time)
+    public function addRiskyTest(Test $test, Throwable $e, float $time): void
     {
         $this->riskies[] = $test->getName();
     }
 
-    public function startTest(Test $test)
+    public function startTest(Test $test): void
     {
     }
 
-    public function endTest(Test $test, $time)
+    public function endTest(Test $test, float $time): void
     {
         $this->tests[] = [
             'name' => $test->getName(),
@@ -78,7 +85,7 @@ class Blink1 implements PHPUnitTestListenerInterface
         ];
     }
 
-    public function startTestSuite(TestSuite $suite)
+    public function startTestSuite(TestSuite $suite): void
     {
         if (count($this->suites) === 0) {
             Timer::start();
@@ -180,7 +187,7 @@ class Blink1 implements PHPUnitTestListenerInterface
         }
     }
 
-    public function endTestSuite(TestSuite $suite)
+    public function endTestSuite(TestSuite $suite): void
     {
         $this->endedSuites++;
 

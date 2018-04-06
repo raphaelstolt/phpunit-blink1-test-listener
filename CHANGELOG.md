@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+## [v2.0.0] - 2018-04-06
+### Added
+- Made test listener compatible with PHPUnit `7.x`.
+
+### Changed
+- Dropped PHP 5.6 and 7.0 support.
+
 ## [v1.1.0] - 2017-03-29
 ### Added
 - Additional guard to check if `blink1-tool` CLI is available.
@@ -13,5 +20,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## v1.0.0 - 2017-01-30
 - Initial release.
 
-[Unreleased]: https://github.com/raphaelstolt/phpunit-blink1-test-listener/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/raphaelstolt/phpunit-blink1-test-listener/compare/v2.0.0...HEAD
+[v2.0.0]: https://github.com/raphaelstolt/phpunit-blink1-test-listener/compare/v1.1.0...v2.0.0
 [v1.1.0]: https://github.com/raphaelstolt/phpunit-blink1-test-listener/compare/v1.0.0...v1.1.0

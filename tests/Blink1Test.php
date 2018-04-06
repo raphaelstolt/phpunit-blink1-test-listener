@@ -3,12 +3,12 @@
 namespace Stolt\PHPUnit\TestListener\Tests;
 
 use Stolt\PHPUnit\TestListener\Blink1 as PHPUnitBlink1TestListener;
-use PHPUnit_Framework_TestCase as PHPUnit;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Process\Process;
 use phpmock\MockBuilder;
 use \RuntimeException;
 
-class Blink1Test extends PHPUnit
+class Blink1Test extends TestCase
 {
     /**
      * @test
