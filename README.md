@@ -21,22 +21,22 @@ $ composer require --dev stolt/phpunit-blink1-test-listener
 #### Configuration
 To use the blink(1) test listener with its __default__ configuration add the following to your `phpunit.xml(.dist)` file.
 ``` xml
-<listeners>
-  <listener class="Stolt\PHPUnit\TestListener\Blink1" />
-</listeners>
+<extensions>
+  <extension class="Stolt\PHPUnit\Extension\Blink1" />
+</extensions>
 ```
 
 It's possible to configure the blink amount (default is three) of the test state colors. Furthermore it's also possible to overwrite the behavior of the failure test state (default is a permanently turned on LED until a test state transition happens) to uniflow with the other test states.
 
 ``` xml
-<listeners>
-  <listener class="Stolt\PHPUnit\TestListener\Blink1">
+<extensions>
+  <extension class="Stolt\PHPUnit\Extension\Blink1">
     <arguments>
-      <integer>2</integer><!-- Blink two times. -->
-      <boolean>false</boolean><!-- Blink on failure. -->
+        <integer>2</integer><!-- Blink two times. -->
+        <boolean>false</boolean><!-- Blink on failure. -->
     </arguments>
-  </listener>
-</listeners>
+  </extension>
+</extensions>
 ```
 
 #### Running tests

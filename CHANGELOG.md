@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Added
+- Utilise PHPUnit's extension and hook system. Closes [#5](https://github.com/raphaelstolt/phpunit-blink1-test-listener/issues/5).
 
 ## [v2.0.0] - 2018-04-06
 ### Added

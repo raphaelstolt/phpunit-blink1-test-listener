@@ -1,8 +1,8 @@
 <?php
 
-namespace Stolt\PHPUnit\TestListener\Tests;
+namespace Stolt\PHPUnit\Extension\Tests;
 
-use Stolt\PHPUnit\TestListener\Blink1 as PHPUnitBlink1TestListener;
+use Stolt\PHPUnit\Extension\Blink1;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Process\Process;
 use phpmock\MockBuilder;
@@ -16,11 +16,11 @@ class Blink1Test extends TestCase
      */
     public function factorsExpectedProcess($color, $expectedCommandLine)
     {
-        $class = new \ReflectionClass('Stolt\PHPUnit\TestListener\Blink1');
+        $class = new \ReflectionClass('Stolt\PHPUnit\Extension\Blink1');
         $method = $class->getMethod('processFactory');
         $method->setAccessible(true);
         $process = $method->invokeArgs(
-            new PHPUnitBlink1TestListener,
+            new Blink1,
             [$color]
         );
 
@@ -34,15 +34,15 @@ class Blink1Test extends TestCase
     {
         return [
             'failure_process' => [
-                'color' => PHPUnitBlink1TestListener::FAILURE_COLOR,
+                'color' => Blink1::FAILURE_COLOR,
                 'expected_command_line' => 'blink1-tool --rgb ff0000',
             ],
             'success_process' => [
-                'color' => PHPUnitBlink1TestListener::SUCCESS_COLOR,
+                'color' => Blink1::SUCCESS_COLOR,
                 'expected_command_line' => 'blink1-tool --rgb 008000 --blink=3 > /dev/null 2>&1 &',
             ],
             'incomplete_process' => [
-                'color' => PHPUnitBlink1TestListener::INCOMPLETE_COLOR,
+                'color' => Blink1::INCOMPLETE_COLOR,
                 'expected_command_line' => 'blink1-tool --rgb ffff00 --blink=3 > /dev/null 2>&1 &',
             ],
         ];
@@ -53,13 +53,13 @@ class Blink1Test extends TestCase
      */
     public function factorsExpectedNonBlinkingFailureProcess()
     {
-        $listener = new PHPUnitBlink1TestListener(10, false);
-        $class = new \ReflectionClass($listener);
+        $extension = new Blink1(10, false);
+        $class = new \ReflectionClass($extension);
         $method = $class->getMethod('processFactory');
         $method->setAccessible(true);
         $process = $method->invokeArgs(
-            $listener,
-            [PHPUnitBlink1TestListener::FAILURE_COLOR]
+            $extension,
+            [Blink1::FAILURE_COLOR]
         );
 
         $expectedCommandLine = 'blink1-tool --rgb ff0000 --blink=10 > /dev/null 2>&1 &';
@@ -72,16 +72,16 @@ class Blink1Test extends TestCase
      */
     public function incompleteTestStateIsDetected($property)
     {
-        $listener = new PHPUnitBlink1TestListener(10, false);
-        $class = new \ReflectionClass($listener);
+        $extension = new Blink1(10, false);
+        $class = new \ReflectionClass($extension);
         $method = $class->getMethod('isIncompleteTestResult');
         $property = $class->getProperty($property);
         $property->setAccessible(true);
-        $property->setValue($listener, ['testSomething']);
+        $property->setValue($extension, ['testSomething']);
 
         $method->setAccessible(true);
         $isIncompleteTestState = $method->invokeArgs(
-            $listener,
+            $extension,
             []
         );
 
@@ -115,12 +115,12 @@ class Blink1Test extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Unable to locate blink1-tool.');
 
-        $listener = new PHPUnitBlink1TestListener(10, false);
-        $class = new \ReflectionClass($listener);
+        $extension = new Blink1(10, false);
+        $class = new \ReflectionClass($extension);
         $method = $class->getMethod('guardBlinkToolPresence');
         $method->setAccessible(true);
         $method->invokeArgs(
-            $listener,
+            $extension,
             [new Process('non-existent-command')]
         );
     }
@@ -134,13 +134,13 @@ class Blink1Test extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Unable to find a blink1 LED device.');
 
-        $listener = new PHPUnitBlink1TestListener(10, false);
+        $extension = new Blink1(10, false);
 
-        $class = new \ReflectionClass($listener);
+        $class = new \ReflectionClass($extension);
         $method = $class->getMethod('guardBlinkToolLedDevicePresence');
         $method->setAccessible(true);
         $method->invokeArgs(
-            $listener,
+            $extension,
             [new Process('non-existent-command')]
         );
     }
@@ -151,11 +151,11 @@ class Blink1Test extends TestCase
      */
     public function factorsExpectedGuardProcess($type, $expectedCommandLine)
     {
-        $class = new \ReflectionClass('Stolt\PHPUnit\TestListener\Blink1');
+        $class = new \ReflectionClass('Stolt\PHPUnit\Extension\Blink1');
         $method = $class->getMethod('guardProcessFactory');
         $method->setAccessible(true);
         $process = $method->invokeArgs(
-            new PHPUnitBlink1TestListener,
+            new Blink1,
             [$type]
         );
 
@@ -173,7 +173,7 @@ class Blink1Test extends TestCase
                 'expected_command_line' => 'blink1-tool --version',
             ],
             'led_device_guard' => [
-                'type' => PHPUnitBlink1TestListener::BLINK1_GUARD_LED_DEVICE,
+                'type' => Blink1::BLINK1_GUARD_LED_DEVICE,
                 'expected_command_line' => 'blink1-tool --list',
             ],
         ];
@@ -185,16 +185,16 @@ class Blink1Test extends TestCase
      */
     public function failureTestStateIsDetected($property)
     {
-        $listener = new PHPUnitBlink1TestListener(10, false);
-        $class = new \ReflectionClass($listener);
+        $extension = new Blink1(10, false);
+        $class = new \ReflectionClass($extension);
         $method = $class->getMethod('isFailureTestResult');
         $property = $class->getProperty($property);
         $property->setAccessible(true);
-        $property->setValue($listener, ['testSomething']);
+        $property->setValue($extension, ['testSomething']);
 
         $method->setAccessible(true);
         $isFailureTestState = $method->invokeArgs(
-            $listener,
+            $extension,
             []
         );
 

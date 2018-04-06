@@ -17,12 +17,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Stolt\\PHPUnit\\TestListener\\": "src/"
+            "Stolt\\PHPUnit\\Extension\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Stolt\\PHPUnit\\TestListener\\Tests\\": "tests/"
+            "Stolt\\PHPUnit\\Extension\\Tests\\": "tests/"
         }
     },
     "minimum-stability": "stable",

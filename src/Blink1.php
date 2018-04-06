@@ -1,18 +1,28 @@
 <?php
 
-namespace Stolt\PHPUnit\TestListener;
+declare(strict_types = 1);
 
-use PHPUnit\Framework\AssertionFailedError;
-use PHPUnit\Framework\TestListener;
-use PHPUnit\Framework\Test;
-use PHPUnit\Framework\TestSuite;
-use PHPUnit\Framework\Warning;
-use SebastianBergmann\Timer\Timer;
-use \Throwable;
-use \RuntimeException;
+namespace Stolt\PHPUnit\Extension;
+
+use PHPUnit\Runner\AfterLastTestHook;
+use PHPUnit\Runner\AfterTestErrorHook;
+use PHPUnit\Runner\AfterTestWarningHook;
+use PHPUnit\Runner\AfterTestFailureHook;
+use PHPUnit\Runner\AfterIncompleteTestHook;
+use PHPUnit\Runner\AfterRiskyTestHook;
+use PHPUnit\Runner\AfterSkippedTestHook;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use \RuntimeException;
 
-class Blink1 implements TestListener
+final class Blink1 implements
+    AfterLastTestHook,
+    AfterTestErrorHook,
+    AfterSkippedTestHook,
+    AfterTestFailureHook,
+    AfterTestWarningHook,
+    AfterIncompleteTestHook,
+    AfterRiskyTestHook
 {
     const FAILURE_COLOR = 'ff0000';
     const SUCCESS_COLOR = '008000';
@@ -22,13 +32,10 @@ class Blink1 implements TestListener
 
     private $errors = [];
     private $warnings = [];
-    private $endedSuites = 0;
     private $failures = [];
     private $incompletes = [];
     private $riskies = [];
     private $skips = [];
-    private $suites = [];
-    private $tests = [];
     private $turnOnFailure = true;
     private $blinkAmount = 3;
 
@@ -43,54 +50,34 @@ class Blink1 implements TestListener
         $this->turnOnFailure = $turnOnFailure;
     }
 
-    public function addError(Test $test, Throwable $e, float $time): void
+    public function executeAfterTestError(string $test, string $message, float $time): void
     {
-        $this->errors[] = $test->getName();
+        $this->errors[] = $test;
     }
 
-    public function addFailure(Test $test, AssertionFailedError $e, float $time): void
+    public function executeAfterTestWarning(string $test, string $message, float $time): void
     {
-        $this->failures[] = $test->getName();
+        $this->warnings[] = $test;
     }
 
-    public function addWarning(Test $test, Warning $e, float $time): void
+    public function executeAfterTestFailure(string $test, string $message, float $time): void
     {
-        $this->warnings[] = $test->getName();
+        $this->failures[] = $test;
     }
 
-    public function addIncompleteTest(Test $test, Throwable $e, float $time): void
+    public function executeAfterIncompleteTest(string $test, string $message, float $time): void
     {
-        $this->incompletes[] = $test->getName();
+        $this->incompletes[] = $test;
     }
 
-    public function addSkippedTest(Test $test, Throwable $e, float $time): void
+    public function executeAfterRiskyTest(string $test, string $message, float $time): void
     {
-        $this->skips[] = $test->getName();
+        $this->riskies[] = $test;
     }
 
-    public function addRiskyTest(Test $test, Throwable $e, float $time): void
+    public function executeAfterSkippedTest(string $test, string $message, float $time): void
     {
-        $this->riskies[] = $test->getName();
-    }
-
-    public function startTest(Test $test): void
-    {
-    }
-
-    public function endTest(Test $test, float $time): void
-    {
-        $this->tests[] = [
-            'name' => $test->getName(),
-            'assertions' => $test->getNumAssertions()
-        ];
-    }
-
-    public function startTestSuite(TestSuite $suite): void
-    {
-        if (count($this->suites) === 0) {
-            Timer::start();
-        }
-        $this->suites[] = $suite->getName();
+        $this->skips[] = $test;
     }
 
     /**
@@ -138,7 +125,7 @@ class Blink1 implements TestListener
     {
         try {
             $process->mustRun();
-        } catch (RuntimeException $e) {
+        } catch (ProcessFailedException $e) {
             throw new RuntimeException('Unable to find a blink1 LED device.');
         }
     }
@@ -151,7 +138,7 @@ class Blink1 implements TestListener
     {
         try {
             $process->mustRun();
-        } catch (RuntimeException $e) {
+        } catch (ProcessFailedException $e) {
             throw new RuntimeException('Unable to locate blink1-tool.');
         }
     }
@@ -187,22 +174,18 @@ class Blink1 implements TestListener
         }
     }
 
-    public function endTestSuite(TestSuite $suite): void
+    public function executeAfterLastTest(): void
     {
-        $this->endedSuites++;
+        $resultColor = self::SUCCESS_COLOR;
 
-        if (count($this->suites) <= $this->endedSuites) {
-            $resultColor = self::SUCCESS_COLOR;
-
-            if ($this->isFailureTestResult()) {
-                $resultColor = self::FAILURE_COLOR;
-            }
-
-            if ($this->isIncompleteTestResult()) {
-                $resultColor = self::INCOMPLETE_COLOR;
-            }
-
-            $this->blink($this->processFactory($resultColor));
+        if ($this->isFailureTestResult()) {
+            $resultColor = self::FAILURE_COLOR;
         }
+
+        if ($this->isIncompleteTestResult()) {
+            $resultColor = self::INCOMPLETE_COLOR;
+        }
+
+        $this->blink($this->processFactory($resultColor));
     }
 }
