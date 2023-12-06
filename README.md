@@ -10,12 +10,12 @@ With this test listener a failing PHPUnit test run will turn the LED light __red
 #### Preconditions
 This package assumes that the [blink1-tool](https://github.com/todbot/blink1#blink1-tool) is installed on your system to enable the communication with your `blink(1)` LED light. On Mac OS, the targeted system of this package, this can be done easily via `brew`.
 ``` bash
-$ brew install blink1
+brew install blink1
 ```
 
 #### Installation via Composer
 ``` bash
-$ composer require --dev stolt/phpunit-blink1-test-listener
+composer require --dev stolt/phpunit-blink1-test-listener
 ```
 
 #### Configuration
@@ -40,8 +40,9 @@ It's possible to configure the blink amount (default is three) of the test state
 ```
 
 #### Running tests
+
 ``` bash
-$ composer test
+composer test
 ```
 
 #### License
