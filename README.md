@@ -1,5 +1,5 @@
 # PHPUnit blink(1) test listener
-[![Build Status](https://travis-ci.org/raphaelstolt/phpunit-blink1-test-listener.svg?branch=master)](https://travis-ci.org/raphaelstolt/phpunit-blink1-test-listener)
+![Test](https://github.com/raphaelstolt/phpunit-blink1-test-listener/workflows/Test/badge.svg)
 [![Version](http://img.shields.io/packagist/v/stolt/phpunit-blink1-test-listener.svg?style=flat)](https://packagist.org/packages/stolt/phpunit-blink1-test-listener)
 ![PHP Version](http://img.shields.io/badge/php-7.1+-ff69b4.svg)
 
