@@ -31,10 +31,8 @@ It's possible to configure the blink amount (default is three) of the test state
 ``` xml
 <extensions>
   <extension class="Stolt\PHPUnit\Extension\Blink1">
-    <arguments>
-        <integer>2</integer><!-- Blink two times. -->
-        <boolean>false</boolean><!-- Blink on failure. -->
-    </arguments>
+    <parameter name="blink-amount" value="2"/>
+    <parameter name="blink-on-failure" value="false"/>
   </extension>
 </extensions>
 ```

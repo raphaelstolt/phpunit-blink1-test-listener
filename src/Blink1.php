@@ -4,25 +4,22 @@ declare(strict_types = 1);
 
 namespace Stolt\PHPUnit\Extension;
 
-use PHPUnit\Runner\AfterLastTestHook;
-use PHPUnit\Runner\AfterTestErrorHook;
-use PHPUnit\Runner\AfterTestWarningHook;
-use PHPUnit\Runner\AfterTestFailureHook;
 use PHPUnit\Runner\AfterIncompleteTestHook;
+use PHPUnit\Runner\AfterLastTestHook;
 use PHPUnit\Runner\AfterRiskyTestHook;
 use PHPUnit\Runner\AfterSkippedTestHook;
-use Symfony\Component\Process\Process;
+use PHPUnit\Runner\AfterTestErrorHook;
+use PHPUnit\Runner\AfterTestFailureHook;
+use PHPUnit\Runner\AfterTestWarningHook;
+use PHPUnit\Runner\Extension\Extension;
+use PHPUnit\Runner\Extension\Facade;
+use PHPUnit\Runner\Extension\ParameterCollection;
+use PHPUnit\TextUI\Configuration\Configuration;
+use RuntimeException;
 use Symfony\Component\Process\Exception\ProcessFailedException;
-use \RuntimeException;
+use Symfony\Component\Process\Process;
 
-final class Blink1 implements
-    AfterLastTestHook,
-    AfterTestErrorHook,
-    AfterSkippedTestHook,
-    AfterTestFailureHook,
-    AfterTestWarningHook,
-    AfterIncompleteTestHook,
-    AfterRiskyTestHook
+final class Blink1 implements Extension
 {
     const FAILURE_COLOR = 'ff0000';
     const SUCCESS_COLOR = '008000';
@@ -150,9 +147,9 @@ final class Blink1 implements
     protected function guardProcessFactory($guard = null)
     {
         if ($guard === self::BLINK1_GUARD_LED_DEVICE) {
-            return new Process('blink1-tool --list');
+            return new Process(['blink1-tool --list']);
         }
-        return new Process('blink1-tool --version');
+        return new Process(['blink1-tool --version']);
     }
 
     /**
@@ -166,11 +163,11 @@ final class Blink1 implements
             || $color === self::INCOMPLETE_COLOR
             || $color === self::FAILURE_COLOR && $this->turnOnFailure === false
         ) {
-            return new Process("blink1-tool --rgb {$color} --blink={$amount} > /dev/null 2>&1 &");
+            return new Process(["blink1-tool --rgb {$color} --blink={$amount} > /dev/null 2>&1 &"]);
         }
 
         if ($color === self::FAILURE_COLOR) {
-            return new Process("blink1-tool --rgb {$color}");
+            return new Process(["blink1-tool --rgb {$color}"]);
         }
     }
 
@@ -187,5 +184,20 @@ final class Blink1 implements
         }
 
         $this->blink($this->processFactory($resultColor));
+    }
+
+    public function bootstrap(Configuration $configuration, Facade $facade, ParameterCollection $parameters): void
+    {
+        if ($configuration->noOutput()) {
+            return;
+        }
+
+        if ($parameters->has('blink-amount')) {
+            $this->blinkAmount = (int) $parameters->get('blink-amount');
+        }
+
+        if ($parameters->has('blink-on-failure')) {
+            $this->turnOnFailure = (bool) $parameters->get('blink-on-failure');
+        }
     }
 }

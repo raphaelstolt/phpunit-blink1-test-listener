@@ -30,20 +30,20 @@ class Blink1Test extends TestCase
     /**
      * @return array
      */
-    public function processProvider()
+    public static function processProvider(): array
     {
         return [
             'failure_process' => [
                 'color' => Blink1::FAILURE_COLOR,
-                'expected_command_line' => 'blink1-tool --rgb ff0000',
+                'expected_command_line' => "'blink1-tool --rgb ff0000'",
             ],
             'success_process' => [
                 'color' => Blink1::SUCCESS_COLOR,
-                'expected_command_line' => 'blink1-tool --rgb 008000 --blink=3 > /dev/null 2>&1 &',
+                'expected_command_line' => "'blink1-tool --rgb 008000 --blink=3 > /dev/null 2>&1 &'",
             ],
             'incomplete_process' => [
                 'color' => Blink1::INCOMPLETE_COLOR,
-                'expected_command_line' => 'blink1-tool --rgb ffff00 --blink=3 > /dev/null 2>&1 &',
+                'expected_command_line' => "'blink1-tool --rgb ffff00 --blink=3 > /dev/null 2>&1 &'",
             ],
         ];
     }
@@ -62,7 +62,7 @@ class Blink1Test extends TestCase
             [Blink1::FAILURE_COLOR]
         );
 
-        $expectedCommandLine = 'blink1-tool --rgb ff0000 --blink=10 > /dev/null 2>&1 &';
+        $expectedCommandLine = "'blink1-tool --rgb ff0000 --blink=10 > /dev/null 2>&1 &'";
         $this->assertEquals($expectedCommandLine, $process->getCommandLine());
     }
 
@@ -91,7 +91,7 @@ class Blink1Test extends TestCase
     /**
      * @return array
      */
-    public function incompletePropertyProvider()
+    public static function incompletePropertyProvider(): array
     {
         return [
             'incompletes_property' => [
@@ -121,7 +121,7 @@ class Blink1Test extends TestCase
         $method->setAccessible(true);
         $method->invokeArgs(
             $extension,
-            [new Process('non-existent-command')]
+            [new Process(['non-existent-command'])]
         );
     }
 
@@ -141,7 +141,7 @@ class Blink1Test extends TestCase
         $method->setAccessible(true);
         $method->invokeArgs(
             $extension,
-            [new Process('non-existent-command')]
+            [new Process(['non-existent-command'])]
         );
     }
 
@@ -165,16 +165,16 @@ class Blink1Test extends TestCase
     /**
      * @return array
      */
-    public function guardProcessProvider()
+    public static function guardProcessProvider(): array
     {
         return [
             'cli_guard_process' => [
                 'type' => null,
-                'expected_command_line' => 'blink1-tool --version',
+                'expected_command_line' => "'blink1-tool --version'",
             ],
             'led_device_guard' => [
                 'type' => Blink1::BLINK1_GUARD_LED_DEVICE,
-                'expected_command_line' => 'blink1-tool --list',
+                'expected_command_line' => "'blink1-tool --list'",
             ],
         ];
     }
@@ -204,7 +204,7 @@ class Blink1Test extends TestCase
     /**
      * @return array
      */
-    public function failurePropertyProvider()
+    public static function failurePropertyProvider(): array
     {
         return [
             'errors_property' => [
