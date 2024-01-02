@@ -1,7 +1,7 @@
 {
     "name": "stolt/phpunit-blink1-test-listener",
     "description": "A blink(1) test listener for PHPUnit.",
-    "keywords": ["phpunit", "blink1", "listener", "extreme feedback device"],
+    "keywords": ["phpunit", "blink1", "listener", "extreme feedback device", "dev"],
     "license": "MIT",
     "authors": [
         {
